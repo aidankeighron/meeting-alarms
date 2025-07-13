@@ -1,54 +1,86 @@
+import * as AuthSession from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { Button, Platform, StyleSheet, Text, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+
+const CLIENT_ID = '1024434201907-k7dhskjs52prefjmsuv1omf2um1gfqev.apps.googleusercontent.com';
+
+const discovery = {
+  authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth',
+  tokenEndpoint: 'https://oauth2.googleapis.com/token',
+  revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
+};
 
 export default function HomeScreen() {
-  const [counter, setCounter] = useState<number>(0);
-  
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [events, setEvents] = useState<any[]>([]);
+
+  const [request, response, promptAsync] = AuthSession.useAuthRequest(
+    {
+      clientId: CLIENT_ID,
+      scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
+      redirectUri: 'https://auth.expo.io/@anonymous/meeting-alarms',
+    },
+    discovery
+  );
+
   useEffect(() => {
-    setCounter(5)
-  }, []);
-    
+    if (response?.type === 'success' && response.authentication) {
+      setAccessToken(response.authentication.accessToken ?? null);
+    }
+  }, [response]);
+
+  async function fetchCalendarEvents() {
+    if (!accessToken) return;
+    try {
+      const res = await fetch(
+        'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+      const data = await res.json();
+      setEvents(data.items || []);
+    } catch (error) {
+      console.error('Failed to fetch events:', error);
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      <Button title='Go Up' onPress={() => {
-        setCounter(counter+1)
-      }} />
-      <Text style={{fontSize: 30, alignSelf: 'center'}}>{counter}</Text>
-      <View style={styles.titleContainer}>
-        <Text>Welcome!</Text>
-      </View>
-      <View style={styles.stepContainer}>
-        <Text>Step 1: Try it</Text>
-        <Text>
-          Edit <Text>app/(tabs)/index.tsx</Text> to see changes.
-          Press{' '}
-          <Text>
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </Text>{' '}
-          to open developer tools.
-        </Text>
-      </View>
-      <View style={styles.stepContainer}>
-        <Text>Step 2: Explore</Text>
-        <Text>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </Text>
-      </View>
-      <View style={styles.stepContainer}>
-        <Text>Step 3: Get a fresh start</Text>
-        <Text>
-          {`When you're ready, run `}
-          <Text>npm run reset-project</Text> to get a fresh{' '}
-          <Text>app</Text> directory. This will move the current{' '}
-          <Text>app</Text> to{' '}
-          <Text>app-example</Text>.
-        </Text>
-      </View>
-    </View>
+    <ScrollView style={styles.container}>
+      <Button
+        title="Sign in with Google"
+        disabled={!request}
+        onPress={() => promptAsync()}
+      />
+
+      {accessToken && (
+        <Button title="Get My Calendar Events" onPress={fetchCalendarEvents} />
+      )}
+
+      {events.length > 0 && (
+        <View>
+          <Text style={styles.heading}>Upcoming Events:</Text>
+          {events.map((event, index) => (
+            <View key={index} style={styles.event}>
+              <Text style={styles.summary}>{event.summary ?? 'No Title'}</Text>
+              <Text>
+                Start:{' '}
+                {event.start?.dateTime ?? event.start?.date ?? 'Unknown start'}
+              </Text>
+              <Text>
+                End: {event.end?.dateTime ?? event.end?.date ?? 'Unknown end'}
+              </Text>
+            </View>
+          ))}
+        </View>
+      )}
+    </ScrollView>
   );
 }
 
@@ -57,20 +89,19 @@ const styles = StyleSheet.create({
     margin: 20,
     marginTop: 40,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  heading: {
+    fontSize: 20,
+    marginTop: 20,
+    fontWeight: 'bold',
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  event: {
+    marginVertical: 10,
+    padding: 10,
+    backgroundColor: '#eee',
+    borderRadius: 10,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  summary: {
+    fontWeight: 'bold',
+    fontSize: 16,
   },
 });
