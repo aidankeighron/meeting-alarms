@@ -1,0 +1,32 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \"import sys, json; data = json.load\\(sys.stdin\\); print\\(data[0][''text''][:30000]\\)\")",
+      "Bash(npx react-native@latest init MeetingAlarms --directory . --skip-install)",
+      "Bash(npx @react-native-community/cli@latest init MeetingAlarms --directory . --skip-install)",
+      "Bash(npm install)",
+      "Bash(npm install @react-navigation/native @react-navigation/drawer @react-navigation/stack react-native-screens react-native-safe-area-context react-native-gesture-handler react-native-reanimated)",
+      "Bash(npm install zustand @nozbe/watermelondb react-native-mmkv)",
+      "Bash(npm install @notifee/react-native @react-native-google-signin/google-signin dayjs)",
+      "Bash(npm install react-native-document-picker react-native-fs react-native-background-actions)",
+      "Bash(npm install react-native-vector-icons @types/react-native-vector-icons @react-native-community/datetimepicker)",
+      "Bash(npm install @nozbe/with-observables)",
+      "Bash(npm install @nozbe/with-observables --legacy-peer-deps)",
+      "Bash(npm install @babel/plugin-proposal-decorators)",
+      "Bash(npm install @babel/plugin-proposal-decorators --legacy-peer-deps)",
+      "Bash(npm install @react-native-community/slider --legacy-peer-deps)",
+      "Bash(python3 -c \"import sys,json; p=json.load\\(sys.stdin\\); print\\(''version:'', p[''version'']\\); print\\(''peerDeps:'', p.get\\(''peerDependencies'', {}\\)\\)\")",
+      "Bash(npm info react-native-mmkv versions --json)",
+      "Bash(python3 -c \"import sys,json; vs=json.load\\(sys.stdin\\); v2=[v for v in vs if v.startswith\\(''2.''\\)]; print\\(''Latest v2:'', v2[-1]\\)\")",
+      "Bash(npm install react-native-mmkv@2.12.2)",
+      "Bash(node -e \"const p = require\\(''./node_modules/react-native-reanimated/package.json''\\); console.log\\(''reanimated version:'', p.version\\)\")",
+      "Bash(npm install react-native-worklets)",
+      "Bash(npm run android)",
+      "Bash(ls \"c:/Users/Billy1301/Documents/Programming/Programs/meeting-alarms/android/gradlew\"*)",
+      "Bash(node -e \"console.log\\(require\\(''./node_modules/react-native-document-picker/package.json''\\).version\\)\")",
+      "Bash(npm info react-native-document-picker versions --json)",
+      "Bash(python3 -c \"import sys,json; vs=json.load\\(sys.stdin\\); recent=[v for v in vs if not \\(''alpha'' in v or ''beta'' in v or ''rc'' in v\\)]; print\\(''Latest 5:'', recent[-5:]\\)\")",
+      "Bash(npm uninstall react-native-document-picker)"
+    ]
+  }
+}
